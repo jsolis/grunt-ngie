@@ -21,6 +21,9 @@ module.exports = function (grunt) {
       separator: ', '
     });
 
+    // regular expression to find all the directive names and the restrict values (E is the only one we need to process)
+    // /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w)['"]/g
+
     // Iterate over all specified file groups.
     this.files.forEach(function (file) {
       // Concat specified files.
@@ -34,8 +37,20 @@ module.exports = function (grunt) {
         }
       }).map(function (filepath) {
         // Read file source.
+        console.log('File being processed: '+filepath);
+        var file = grunt.file.read(filepath);
+        var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
+        var result;
+        while ((result = regexp.exec(file)) !== null) {
+          console.log(result[0]);
+          console.log(result[1]);
+          console.log(result[2]);
+          console.log('----');
+        }
+        
+
         return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+      });
 
       // Handle options.
       src += options.punctuation;
