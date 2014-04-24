@@ -90,3 +90,8 @@ _(Nothing yet)_
 
 ## License
 Copyright (c) 2014 Jason Solis. Licensed under the MIT license.
+=======
+grunt-ngie
+==========
+
+Automatically add DOM elements for your Angular custom directives
