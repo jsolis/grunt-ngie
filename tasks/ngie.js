@@ -8,6 +8,8 @@
 
 'use strict';
 
+var cheerio = require('cheerio');
+
 module.exports = function (grunt) {
 
   // Please see the Grunt documentation for more information regarding task
@@ -18,9 +20,10 @@ module.exports = function (grunt) {
     // Merge task-specific and/or target-specific options with these defaults.
     // TODO - update these to our options
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+      destTag: 'head'
     });
+
+    grunt.log.writeln(options.destTag);
 
     var ieFixStart = '<!--[if lte IE 8]><script>(function(){';
     var ieFixBody = '';
