@@ -25,7 +25,7 @@ module.exports = function (grunt) {
     var ieFixStart = '<!--[if lte IE 8]><script>(function(){';
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<ngieElements.length;i++) { document.createElement(ngieElements[i]); } })()</script><![endif]-->';
-    var elements = [];
+    var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
 
     // The regular expression used below is used to find all the directive names 
     //  and the restrict values (E is the only one we need to process)
