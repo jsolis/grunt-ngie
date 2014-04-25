@@ -35,9 +35,10 @@ module.exports = function (grunt) {
     ngie: {
       default_options: {
         options: {
+          indexFile: 'test/indexFiles/index.html',
         },
         files: {
-          'tmp/default_options_compiled': ['test/fixtures/compiled']
+          'tmp/index.html': ['test/fixtures/compiled']
         }
       }/*,
       custom_options: {

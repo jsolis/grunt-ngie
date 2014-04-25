@@ -16,13 +16,19 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('ngie', 'Automatically add DOM elements for your Angular custom directives', function () {
 
     // Merge task-specific and/or target-specific options with these defaults.
+    // TODO - update these to our options
     var options = this.options({
       punctuation: '.',
       separator: ', '
     });
 
-    // regular expression to find all the directive names and the restrict values (E is the only one we need to process)
-    // /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w)['"]/g
+    var ieFixStart = '<!--[if lte IE 8]><script>(function(){';
+    var ieFixBody = '';
+    var ieFixEnd = 'for (var i=0;i<ngieElements.length;i++) { document.createElement(ngieElements[i]); } })()</script><![endif]-->';
+    var elements = [];
+
+    // The regular expression used below is used to find all the directive names 
+    //  and the restrict values (E is the only one we need to process)
 
     // Iterate over all specified file groups.
     this.files.forEach(function (file) {
@@ -37,26 +43,26 @@ module.exports = function (grunt) {
         }
       }).map(function (filepath) {
         // Read file source.
-        console.log('File being processed: '+filepath);
         var file = grunt.file.read(filepath);
         var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
         var result;
         while ((result = regexp.exec(file)) !== null) {
-          console.log(result[0]);
-          console.log(result[1]);
-          console.log(result[2]);
-          console.log('----');
+          grunt.log.writeln(result[0]);
+          grunt.log.writeln(result[1]);
+          grunt.log.writeln(result[2]);
+          grunt.log.writeln('----');
+          if (result[2].indexOf('E') > -1) {
+            elements.push(result[1]);
+          }
         }
-        
-
         return grunt.file.read(filepath);
       });
 
-      // Handle options.
-      src += options.punctuation;
+      ieFixBody = 'var ngieElements = ' + JSON.stringify(elements) + ';';
+      var fix = ieFixStart + ieFixBody + ieFixEnd;
 
       // Write the destination file.
-      grunt.file.write(file.dest, src);
+      grunt.file.write(file.dest, fix);
 
       // Print a success message.
       grunt.log.writeln('File "' + file.dest + '" created.');
