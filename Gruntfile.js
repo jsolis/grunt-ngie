@@ -35,21 +35,21 @@ module.exports = function (grunt) {
     ngie: {
       default_options: {
         options: {
-          indexFile: 'test/indexFiles/index.html',
+          indexFile: 'test/indexFiles/index.html'
         },
         files: {
-          'tmp/index.html': ['test/fixtures/compiled']
+          'tmp/index-default.html': ['test/fixtures/compiled']
         }
-      }/*,
+      },
       custom_options: {
         options: {
-          separator: ': ',
-          punctuation: ' !!!'
+          indexFile: 'test/indexFiles/index.html',
+          destTag: 'body'
         },
         files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
+          'tmp/index-custom.html': ['test/fixtures/compiled']
         }
-      }*/
+      }
     },
 
     // Unit tests.
