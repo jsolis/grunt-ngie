@@ -23,8 +23,6 @@ module.exports = function (grunt) {
       destTag: 'head'
     });
 
-    grunt.log.writeln(options.destTag);
-
     var ieFixStart = '<!--[if lte IE 8]><script>(function(){';
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<ngieElements.length;i++) { document.createElement(ngieElements[i]); } })()</script><![endif]-->';
@@ -50,10 +48,6 @@ module.exports = function (grunt) {
         var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
         var result;
         while ((result = regexp.exec(file)) !== null) {
-          grunt.log.writeln(result[0]);
-          grunt.log.writeln(result[1]);
-          grunt.log.writeln(result[2]);
-          grunt.log.writeln('----');
           if (result[2].indexOf('E') > -1) {
             elements.push(result[1]);
           }
@@ -64,11 +58,19 @@ module.exports = function (grunt) {
       ieFixBody = 'var ngieElements = ' + JSON.stringify(elements) + ';';
       var fix = ieFixStart + ieFixBody + ieFixEnd;
 
+      // load file.dest in cheerio
+      var indexFile = grunt.file.read(options.indexFile);
+      var $ = cheerio.load(indexFile);
+      
+      // append the fix to the destTag
+      $(options.destTag).append(fix);
+
       // Write the destination file.
-      grunt.file.write(file.dest, fix);
+      var destFileFixed = $.html();
+      grunt.file.write(file.dest, destFileFixed);
 
       // Print a success message.
-      grunt.log.writeln('File "' + file.dest + '" created.');
+      grunt.log.writeln('All your IE is fixed: "' + file.dest + '" created.');
     });
   });
 
