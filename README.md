@@ -4,6 +4,25 @@
 
 > Automatically add DOM elements for your Angular custom directives
 
+Using custom element style directives in Angular breaks IE8 and older unless you specifically call document.createElement() for each one. See the [Angular documentation][1] on this topic for more information.
+
+When writing a large application, it can be cumbersome to keep adding these. Even worse, it is error prone if you add a new directive, forget to add the createElement() call, and miss testing in IE8 (which happens because what developer checks IE8).
+
+This grunt task will run through the specified files and generate a block of code that looks like the below snippet and will add it to your document. This way all your directives will be included in your complied version.
+
+```js
+<!--[if lte IE 8]>
+<script>
+(function(){
+    var ngieElements = ["ng-include","ng-pluralize","ng-view","ng:include","ng:pluralize","ng:view","foo","bar","debugger"];
+    for (var i=0;i<ngieElements.length;i++) {
+        document.createElement(ngieElements[i]);
+    } 
+})()
+</script>
+<![endif]-->
+```
+
 ## Getting Started
 This plugin requires Grunt.
 
@@ -24,61 +43,80 @@ grunt.loadNpmTasks('ngie');
 ### Overview
 In your project's Gruntfile, add a section named `ngie` to the data object passed into `grunt.initConfig()`.
 
+Basic example:
 ```js
 grunt.initConfig({
   ngie: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
+    files: {
+      'dest/index.html': ['dest/scripts/main-compiled.js']
     },
   },
 })
 ```
+### Files
+
+Basic format:
+`'html document to apply fix to': 'files to look for custom directives'`
+
+* The key of each object represents the HTML document serving as your angular app that you want the fix to be appended to.
+* The value represents the array of js files in your app where custom directives may be present. You can point this to the list of your source files or a concatenated, minified file.
 
 ### Options
 
-#### options.separator
+#### options.destTag
 Type: `String`
-Default value: `',  '`
+Default value: `'head'`
 
-A string value that is used to do something with whatever.
+JQuery style selector where the fix will be appended. If not specified we append the fix to the `<head>` tag in your document.
 
-#### options.punctuation
+#### options.fileDestOverride
 Type: `String`
-Default value: `'.'`
+Default value: `'file.dest'`
 
-A string value that is used to do something else with whatever else.
+An optional alternative location filepath where you want the fixed document to be stored. If not specified we use the dest filepath from the files object.
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+In this example, the default options are used so the `<script>` tag fix will be applied to the `<head>` element of the document named `app/index.html`. The files `foo.js` and `bar.js` will be inspected for the existence of any custom directives with a type of 'E'.  The file dest/index.html should have already been created.
 
 ```js
 grunt.initConfig({
   ngie: {
     options: {},
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      'dest/index.html': ['app/directives/foo.js', 'app/directives/bar.js'],
     },
   },
 })
 ```
 
 #### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+In this example, the custom option `destTag` is used and so the `<script>` fix will be appened to the `<body>`
 
 ```js
 grunt.initConfig({
   ngie: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+        destTag: 'body'
     },
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      'dest/index.html': ['app/directives/foo.js'],
+    },
+  },
+})
+```
+
+In this example, the custom option `fileDestOverride` is used and so instead of over writing app/index.html, we read app/index.html, append the fix, and write the fixed version to `dest/index-custom.html`.
+
+```js
+grunt.initConfig({
+  ngie: {
+    options: {
+      'fileDestOverride': 'dest/index-custom.html'
+    },
+    files: {
+      'app/index.html': ['app/directives/foo.js'],
     },
   },
 })
@@ -88,7 +126,10 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+* version 0.0.1 - initial release with basic functionality
 
 ## License
 Copyright (c) 2014 Jason Solis. Licensed under the MIT license.
+
+
+  [1]: https://docs.angularjs.org/guide/ie
