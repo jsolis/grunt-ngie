@@ -32,7 +32,7 @@ exports.ngie = {
 
     var actual = grunt.file.read('tmp/index-default.html');
     var expected = grunt.file.read('test/expected/index-default.html');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+    test.equal(actual, expected, 'by default ie fix is inserted to the end of the head tag.');
 
     test.done();
   },
@@ -41,7 +41,7 @@ exports.ngie = {
 
     var actual = grunt.file.read('tmp/index-custom.html');
     var expected = grunt.file.read('test/expected/index-custom.html');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+    test.equal(actual, expected, 'custom option to override where ie fix gets appended to.');
 
     test.done();
   }
