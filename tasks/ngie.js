@@ -18,7 +18,6 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('ngie', 'Automatically add DOM elements for your Angular custom directives', function () {
 
     // Merge task-specific and/or target-specific options with these defaults.
-    // TODO - update these to our options
     var options = this.options({
       destTag: 'head'
     });
@@ -59,7 +58,8 @@ module.exports = function (grunt) {
       var fix = ieFixStart + ieFixBody + ieFixEnd;
 
       // load file.dest in cheerio
-      var indexFile = grunt.file.read(options.indexFile);
+      var indexFilepath = file.dest;
+      var indexFile = grunt.file.read(indexFilepath);
       var $ = cheerio.load(indexFile);
       
       // append the fix to the destTag
@@ -67,7 +67,8 @@ module.exports = function (grunt) {
 
       // Write the destination file.
       var destFileFixed = $.html();
-      grunt.file.write(file.dest, destFileFixed);
+      var destFilePath = options.fileDestOverride || file.dest;
+      grunt.file.write(destFilePath, destFileFixed);
 
       // Print a success message.
       grunt.log.writeln('All your IE is fixed: "' + file.dest + '" created.');

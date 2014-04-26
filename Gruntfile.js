@@ -35,19 +35,19 @@ module.exports = function (grunt) {
     ngie: {
       default_options: {
         options: {
-          indexFile: 'test/indexFiles/index.html'
+          fileDestOverride: 'tmp/index-default.html'
         },
         files: {
-          'tmp/index-default.html': ['test/fixtures/compiled']
+          'test/indexFiles/index.html': ['test/fixtures/compiled']
         }
       },
       custom_options: {
         options: {
-          indexFile: 'test/indexFiles/index.html',
+          fileDestOverride: 'tmp/index-custom.html',
           destTag: 'body'
         },
         files: {
-          'tmp/index-custom.html': ['test/fixtures/compiled']
+          'test/indexFiles/index.html': ['test/fixtures/compiled']
         }
       }
     },
