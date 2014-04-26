@@ -1,4 +1,6 @@
-# ngie [![Build Status](https://travis-ci.org/jsolis/grunt-ngie.svg?branch=master)](https://travis-ci.org/jsolis/grunt-ngie)
+# ngie 
+[![Build Status](https://travis-ci.org/jsolis/grunt-ngie.svg?branch=master)](https://travis-ci.org/jsolis/grunt-ngie)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 > Automatically add DOM elements for your Angular custom directives
 
