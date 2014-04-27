@@ -43,7 +43,7 @@ grunt.loadNpmTasks('ngie');
 ### Overview
 In your project's Gruntfile, add a section named `ngie` to the data object passed into `grunt.initConfig()`.
 
-Basic example:
+Basic example reading your compiled js:
 ```js
 grunt.initConfig({
   ngie: {
@@ -53,6 +53,18 @@ grunt.initConfig({
   },
 })
 ```
+
+Basic example reading your source js:
+```js
+grunt.initConfig({
+  ngie: {
+    files: {
+      'dest/index.html': ['app/scripts/**/*.js']
+    },
+  },
+})
+```
+
 ### Files
 
 Basic format:
@@ -101,7 +113,7 @@ grunt.initConfig({
         destTag: 'body'
     },
     files: {
-      'dest/index.html': ['app/directives/foo.js'],
+      'dest/index.html': ['app/directives/**/*.js'],
     },
   },
 })
@@ -116,7 +128,7 @@ grunt.initConfig({
       'fileDestOverride': 'dest/index-custom.html'
     },
     files: {
-      'app/index.html': ['app/directives/foo.js'],
+      'app/index.html': ['app/directives/**/*.js'],
     },
   },
 })
