@@ -1,5 +1,5 @@
 {
-  "name": "ngie",
+  "name": "grunt-ngie",
   "version": "0.0.1",
   "description": "Automatically add DOM elements for your Angular custom directives",
   "homepage": "https://github.com/jsolis/grunt-ngie",
