@@ -44,5 +44,17 @@ exports.ngie = {
     test.equal(actual, expected, 'custom option to override where ie fix gets appended to.');
 
     test.done();
+  },
+  // TODO - add test for unminified files
+
+  // TODO - add test for traversing source directories
+  directory_options: function (test) {
+    test.expect(1);
+
+    var actual = grunt.file.read('tmp/index-directory.html');
+    var expected = grunt.file.read('test/expected/index-directory.html');
+    test.equals(actual, expected, 'directory traversing and unminified file inspecting.');
+
+    test.done();
   }
 };

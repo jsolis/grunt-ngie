@@ -49,6 +49,14 @@ module.exports = function (grunt) {
         files: {
           'test/indexFiles/index.html': ['test/fixtures/compiled']
         }
+      },
+      directory_options: {
+        options: {
+          fileDestOverride: 'tmp/index-directory.html'
+        },
+        files: {
+          'test/indexFiles/index.html': ['test/fixtures/directives/**/*.js']
+        }
       }
     },
 
