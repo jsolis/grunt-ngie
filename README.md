@@ -49,10 +49,12 @@ Basic example reading your compiled js:
 ```js
 grunt.initConfig({
   ngie: {
-    files: {
-      'dest/index.html': ['dest/scripts/main-compiled.js']
-    },
-  },
+    dist: {
+      files: {
+        'dest/index.html': ['dest/scripts/main-compiled.js']
+      }
+    }
+  }
 })
 ```
 
@@ -60,10 +62,12 @@ Basic example reading your source js:
 ```js
 grunt.initConfig({
   ngie: {
-    files: {
-      'dest/index.html': ['app/scripts/**/*.js']
-    },
-  },
+    dist: {
+      files: {
+        'dest/index.html': ['app/scripts/**/*.js']
+      }
+    }
+  }
 })
 ```
 
@@ -97,11 +101,13 @@ In this example, the default options are used so the `<script>` tag fix will be 
 ```js
 grunt.initConfig({
   ngie: {
-    options: {},
-    files: {
-      'dest/index.html': ['app/directives/foo.js', 'app/directives/bar.js'],
-    },
-  },
+    dist: {
+      options: {},
+      files: {
+        'dest/index.html': ['app/directives/foo.js', 'app/directives/bar.js'],
+      }
+    }
+  }
 })
 ```
 
@@ -111,13 +117,15 @@ In this example, the custom option `destTag` is used and so the `<script>` fix w
 ```js
 grunt.initConfig({
   ngie: {
-    options: {
+    dist: {
+      options: {
         destTag: 'body'
-    },
-    files: {
-      'dest/index.html': ['app/directives/**/*.js'],
-    },
-  },
+      },
+      files: {
+        'dest/index.html': ['app/directives/**/*.js'],
+      }
+    }
+  }
 })
 ```
 
@@ -126,13 +134,15 @@ In this example, the custom option `fileDestOverride` is used and so instead of 
 ```js
 grunt.initConfig({
   ngie: {
-    options: {
-      'fileDestOverride': 'dest/index-custom.html'
-    },
-    files: {
-      'app/index.html': ['app/directives/**/*.js'],
-    },
-  },
+    dist: {
+      options: {
+        'fileDestOverride': 'dest/index-custom.html'
+      },
+      files: {
+        'app/index.html': ['app/directives/**/*.js'],
+      }
+    }
+  }
 })
 ```
 
