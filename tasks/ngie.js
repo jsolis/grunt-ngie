@@ -30,6 +30,10 @@ module.exports = function (grunt) {
     // The regular expression used below is used to find all the directive names 
     //  and the restrict values (E is the only one we need to process)
 
+    grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
+      return file.src;
+    })));
+
     // Iterate over all specified file groups.
     this.files.forEach(function (file) {
       // Concat specified files.
