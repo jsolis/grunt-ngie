@@ -10,7 +10,7 @@
     "url": "https://about.me/jsolis"
   },
   "keywords": [
-    "gruntplugin"
+    "gruntplugin", "grunt", "angular", "ie", "ie8", "ngie", "grunt-ngie"
   ],
   "main": "Gruntfile.js",
   "engines": {
