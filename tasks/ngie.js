@@ -45,7 +45,7 @@ module.exports = function (grunt) {
         } else {
           return true;
         }
-      }).map(function (filepath) {
+      }).forEach(function (filepath) {
         // Read file source.
         var file = grunt.file.read(filepath);
         var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
@@ -55,7 +55,6 @@ module.exports = function (grunt) {
             elements.push(result[1]);
           }
         }
-        return grunt.file.read(filepath);
       });
 
       ieFixBody = 'var ngieElements = ' + JSON.stringify(elements) + ';';
