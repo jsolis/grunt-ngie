@@ -51,7 +51,7 @@ grunt.initConfig({
   ngie: {
     dist: {
       files: {
-        'dest/index.html': ['dest/scripts/main-compiled.js']
+        'dist/index.html': ['dist/scripts/main-compiled.js']
       }
     }
   }
@@ -64,7 +64,7 @@ grunt.initConfig({
   ngie: {
     dist: {
       files: {
-        'dest/index.html': ['app/scripts/**/*.js']
+        'dist/index.html': ['app/scripts/**/*.js']
       }
     }
   }
@@ -96,7 +96,7 @@ An optional alternative location filepath where you want the fixed document to b
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used so the `<script>` tag fix will be applied to the `<head>` element of the document named `app/index.html`. The files `foo.js` and `bar.js` will be inspected for the existence of any custom directives with a type of 'E'.  The file dest/index.html should have already been created.
+In this example, the default options are used so the `<script>` tag fix will be applied to the `<head>` element of the document named `app/index.html`. The files `foo.js` and `bar.js` will be inspected for the existence of any custom directives with a type of 'E'.  The file dist/index.html should have already been created.
 
 ```js
 grunt.initConfig({
@@ -104,7 +104,7 @@ grunt.initConfig({
     dist: {
       options: {},
       files: {
-        'dest/index.html': ['app/directives/foo.js', 'app/directives/bar.js'],
+        'dist/index.html': ['app/directives/foo.js', 'app/directives/bar.js'],
       }
     }
   }
@@ -122,21 +122,21 @@ grunt.initConfig({
         destTag: 'body'
       },
       files: {
-        'dest/index.html': ['app/directives/**/*.js'],
+        'dist/index.html': ['app/directives/**/*.js'],
       }
     }
   }
 })
 ```
 
-In this example, the custom option `fileDestOverride` is used and so instead of over writing app/index.html, we read app/index.html, append the fix, and write the fixed version to `dest/index-custom.html`.
+In this example, the custom option `fileDestOverride` is used and so instead of over writing app/index.html, we read app/index.html, append the fix, and write the fixed version to `dist/index-custom.html`.
 
 ```js
 grunt.initConfig({
   ngie: {
     dist: {
       options: {
-        'fileDestOverride': 'dest/index-custom.html'
+        'fileDestOverride': 'dist/index-custom.html'
       },
       files: {
         'app/index.html': ['app/directives/**/*.js'],
