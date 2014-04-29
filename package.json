@@ -1,6 +1,6 @@
 {
   "name": "grunt-ngie",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Automatically add DOM elements for your Angular custom directives",
   "homepage": "https://github.com/jsolis/grunt-ngie",
   "repository": "https://github.com/jsolis/grunt-ngie.git",
@@ -10,7 +10,13 @@
     "url": "https://about.me/jsolis"
   },
   "keywords": [
-    "gruntplugin", "grunt", "angular", "ie", "ie8", "ngie", "grunt-ngie"
+    "gruntplugin",
+    "grunt",
+    "angular",
+    "ie",
+    "ie8",
+    "ngie",
+    "grunt-ngie"
   ],
   "main": "Gruntfile.js",
   "engines": {
