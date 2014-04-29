@@ -13,12 +13,12 @@ This grunt task will run through the specified files and generate a block of cod
 ```js
 <!--[if lte IE 8]>
 <script>
-(function(){
-    var ngieElements = ["ng-include","ng-pluralize","ng-view","ng:include","ng:pluralize","ng:view","foo","bar","debugger"];
-    for (var i=0;i<ngieElements.length;i++) {
-        document.createElement(ngieElements[i]);
+(function(d){
+    var e = ["ng-include","ng-pluralize","ng-view","ng:include","ng:pluralize","ng:view","foo","bar","debugger"];
+    for (var i=0;i<e.length;i++) {
+        d.createElement(e[i]);
     } 
-})()
+})(document);
 </script>
 <![endif]-->
 ```

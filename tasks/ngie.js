@@ -22,9 +22,9 @@ module.exports = function (grunt) {
       destTag: 'head'
     });
 
-    var ieFixStart = '<!--[if lte IE 8]><script>(function(){';
+    var ieFixStart = '<!--[if lte IE 8]><script>(function(d){';
     var ieFixBody = '';
-    var ieFixEnd = 'for (var i=0;i<ngieElements.length;i++) { document.createElement(ngieElements[i]); } })()</script><![endif]-->';
+    var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
     var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
 
     // The regular expression used below is used to find all the directive names 
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
         }
       });
 
-      ieFixBody = 'var ngieElements = ' + JSON.stringify(elements) + ';';
+      ieFixBody = 'var e = ' + JSON.stringify(elements) + ';';
       var fix = ieFixStart + ieFixBody + ieFixEnd;
 
       // load file.dest in cheerio
