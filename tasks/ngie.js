@@ -52,7 +52,8 @@ module.exports = function (grunt) {
         var result;
         while ((result = regexp.exec(file)) !== null) {
           if (result[2].indexOf('E') > -1) {
-            elements.push(result[1]);
+            var directiveElement = result[1].replace(/([A-Z])/g, '-$1').toLowerCase();
+            elements.push(directiveElement);
           }
         }
       });
