@@ -151,6 +151,8 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 * version 0.0.1 - initial release with basic functionality
+* version 0.0.2 - improved script output
+* version 0.0.3 - fixed bug for camel cased element directive names (fooBar -> foo-bar)
 
 ## License
 Copyright (c) 2014 Jason Solis. Licensed under the MIT license.
