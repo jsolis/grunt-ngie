@@ -27,7 +27,7 @@ module.exports = function (grunt) {
     var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
     var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
 
-    // The regular expression used below is used to find all the directive names 
+    // The regular expression used below is used to find all the directive names
     //  and the restrict values (E is the only one we need to process)
 
     grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
@@ -48,12 +48,36 @@ module.exports = function (grunt) {
       }).forEach(function (filepath) {
         // Read file source.
         var file = grunt.file.read(filepath);
-        var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
-        var result;
-        while ((result = regexp.exec(file)) !== null) {
-          if (result[2].indexOf('E') > -1) {
-            var directiveElement = result[1].replace(/([A-Z])/g, '-$1').toLowerCase();
-            elements.push(directiveElement);
+
+        var directive_regexp = /directive\s*\(['"](\w+)['"]/g;
+        var directive_result, paren_result;
+        while((directive_result = directive_regexp.exec(file)) !== null) {
+          var paren_regexp = /(?:\/\*(?:[\s\S]*?)\*\/)|(?:\/\/(?:.*)$)|(?:"[\s\S]*?")|(?:'[\s\S]*?')|([\(\)])/gm;
+          var directive_name = directive_result[1].replace(/([A-Z])/g, '-$1').toLowerCase();
+
+          var paren_count = 0;
+          var directive_end_index;
+          while((paren_result = paren_regexp.exec(file.slice(directive_result.index))) !== null) {
+            if(typeof(paren_result[1]) === 'undefined') {
+              continue;
+            }
+            paren_count += (paren_result[1] === '(') ? 1 : -1;
+            if(paren_count === 0) {
+              directive_end_index = paren_result.index;
+              break;
+            }
+          }
+
+          if(typeof(directive_end_index) === 'undefined') {
+            continue;
+          }
+
+          var restrict_regexp = /restrict:\s*['"]\w*(E)\w*['"]/g;
+
+          var directive = file.slice(directive_result.index, directive_result.index+directive_end_index+1);
+          var restrict_result = restrict_regexp.exec(directive);
+          if(restrict_result !== null && typeof(restrict_result[1]) !== 'undefined') {
+            elements.push(directive_name);
           }
         }
       });
@@ -65,7 +89,7 @@ module.exports = function (grunt) {
       var indexFilepath = file.dest;
       var indexFile = grunt.file.read(indexFilepath);
       var $ = cheerio.load(indexFile);
-      
+
       // append the fix to the destTag
       $(options.destTag).append(fix);
 
