@@ -39,6 +39,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "cheerio": "~0.15.0"
+    "cheerio": "~0.15.0",
+    "esprima": "~1.2.2"
   }
 }

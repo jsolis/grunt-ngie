@@ -9,6 +9,7 @@
 'use strict';
 
 var cheerio = require('cheerio');
+var esprima = require('esprima');
 
 module.exports = function (grunt) {
 
@@ -26,9 +27,6 @@ module.exports = function (grunt) {
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
     var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
-
-    // The regular expression used below is used to find all the directive names
-    //  and the restrict values (E is the only one we need to process)
 
     grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
       return file.src;
@@ -49,37 +47,68 @@ module.exports = function (grunt) {
         // Read file source.
         var file = grunt.file.read(filepath);
 
-        var directive_regexp = /directive\s*\(['"](\w+)['"]/g;
-        var directive_result, paren_result;
-        while((directive_result = directive_regexp.exec(file)) !== null) {
-          var paren_regexp = /(?:\/\*(?:[\s\S]*?)\*\/)|(?:\/\/(?:.*)$)|(?:"[\s\S]*?")|(?:'[\s\S]*?')|([\(\)])/gm;
-          var directive_name = directive_result[1].replace(/([A-Z])/g, '-$1').toLowerCase();
+        var syntax = esprima.parse(file);
 
-          var paren_count = 0;
-          var directive_end_index;
-          while((paren_result = paren_regexp.exec(file.slice(directive_result.index))) !== null) {
-            if(typeof(paren_result[1]) === 'undefined') {
-              continue;
+        // Executes callback on the object and its children (recursively).
+        var traverse = function(object, callback) {
+          var key, child;
+
+          // Stop recursion if the callback returns false
+          if(callback.call(null, object) !== true) {
+            return;
+          }
+          for (key in object) {
+            if (object.hasOwnProperty(key)) {
+              child = object[key];
+              if (typeof child === 'object' && child !== null) {
+                traverse(child, callback);
+              }
             }
-            paren_count += (paren_result[1] === '(') ? 1 : -1;
-            if(paren_count === 0) {
-              directive_end_index = paren_result.index;
-              break;
-            }
           }
+        };
 
-          if(typeof(directive_end_index) === 'undefined') {
-            continue;
+        // Confirm a call expression callee's name
+        var checkCallExpression = function(node, callee_name) {
+          return (
+            node.type === 'CallExpression' &&
+            typeof(node.callee) !== 'undefined' &&
+            typeof(node.callee.property) !== 'undefined' &&
+            node.callee.property.type === 'Identifier' &&
+            node.callee.property.name === callee_name
+          );
+        };
+
+        // Confirm a directive's restrict propert contains an 'E' in it
+        var checkRestrictProperty = function(node) {
+          return (
+            node.type === "Property" &&
+            typeof(node.key) !== 'undefined' &&
+            node.key.name === "restrict" &&
+            typeof(node.value) !== 'undefined' &&
+            node.value.value.indexOf('E') !== -1
+          );
+        };
+
+        traverse(syntax, function(node) {
+          if(
+            node.type === "CallExpression" &&
+            checkCallExpression(node, 'directive') &&
+            node.arguments.length > 1 &&
+            node.arguments[0].type === "Literal"
+          ) {
+            // Hyphonate a directive's name from camelCase
+            var directiveName = node.arguments[0].value.replace(/([A-Z])/g, '-$1').toLowerCase();
+            traverse(node.arguments.slice(1), function(subNode) {
+              if(subNode.type === "Property" && checkRestrictProperty(subNode)) {
+                elements.push(directiveName);
+                return false;
+              }
+              return true;
+            });
+            return false;
           }
-
-          var restrict_regexp = /restrict:\s*['"]\w*(E)\w*['"]/g;
-
-          var directive = file.slice(directive_result.index, directive_result.index+directive_end_index+1);
-          var restrict_result = restrict_regexp.exec(directive);
-          if(restrict_result !== null && typeof(restrict_result[1]) !== 'undefined') {
-            elements.push(directive_name);
-          }
-        }
+          return true;
+        });
       });
 
       ieFixBody = 'var e = ' + JSON.stringify(elements) + ';';
