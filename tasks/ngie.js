@@ -9,6 +9,7 @@
 'use strict';
 
 var cheerio = require('cheerio');
+var esprima = require('esprima');
 
 module.exports = function (grunt) {
 
@@ -26,9 +27,6 @@ module.exports = function (grunt) {
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
     var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
-
-    // The regular expression used below is used to find all the directive names 
-    //  and the restrict values (E is the only one we need to process)
 
     grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
       return file.src;
@@ -48,14 +46,69 @@ module.exports = function (grunt) {
       }).forEach(function (filepath) {
         // Read file source.
         var file = grunt.file.read(filepath);
-        var regexp = /directive\s*\(['"](\w+)['"][\w\W]*?restrict:\s*['"](\w+)['"]/g;
-        var result;
-        while ((result = regexp.exec(file)) !== null) {
-          if (result[2].indexOf('E') > -1) {
-            var directiveElement = result[1].replace(/([A-Z])/g, '-$1').toLowerCase();
-            elements.push(directiveElement);
+
+        var syntax = esprima.parse(file);
+
+        // Executes callback on the object and its children (recursively).
+        var traverse = function(object, callback) {
+          var key, child;
+
+          // Stop recursion if the callback returns false
+          if(callback.call(null, object) !== true) {
+            return;
           }
-        }
+          for (key in object) {
+            if (object.hasOwnProperty(key)) {
+              child = object[key];
+              if (typeof child === 'object' && child !== null) {
+                traverse(child, callback);
+              }
+            }
+          }
+        };
+
+        // Confirm a call expression callee's name
+        var checkCallExpression = function(node, callee_name) {
+          return (
+            node.type === 'CallExpression' &&
+            typeof(node.callee) !== 'undefined' &&
+            typeof(node.callee.property) !== 'undefined' &&
+            node.callee.property.type === 'Identifier' &&
+            node.callee.property.name === callee_name
+          );
+        };
+
+        // Confirm a directive's restrict propert contains an 'E' in it
+        var checkRestrictProperty = function(node) {
+          return (
+            node.type === "Property" &&
+            typeof(node.key) !== 'undefined' &&
+            node.key.name === "restrict" &&
+            typeof(node.value) !== 'undefined' &&
+            node.value.value.indexOf('E') !== -1
+          );
+        };
+
+        traverse(syntax, function(node) {
+          if(
+            node.type === "CallExpression" &&
+            checkCallExpression(node, 'directive') &&
+            node.arguments.length > 1 &&
+            node.arguments[0].type === "Literal"
+          ) {
+            // Hyphonate a directive's name from camelCase
+            var directiveName = node.arguments[0].value.replace(/([A-Z])/g, '-$1').toLowerCase();
+            traverse(node.arguments.slice(1), function(subNode) {
+              if(subNode.type === "Property" && checkRestrictProperty(subNode)) {
+                elements.push(directiveName);
+                return false;
+              }
+              return true;
+            });
+            return false;
+          }
+          return true;
+        });
       });
 
       ieFixBody = 'var e = ' + JSON.stringify(elements) + ';';
@@ -65,7 +118,7 @@ module.exports = function (grunt) {
       var indexFilepath = file.dest;
       var indexFile = grunt.file.read(indexFilepath);
       var $ = cheerio.load(indexFile);
-      
+
       // append the fix to the destTag
       $(options.destTag).append(fix);
 
