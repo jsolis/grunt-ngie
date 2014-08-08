@@ -153,8 +153,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 * version 0.0.1 - initial release with basic functionality
 * version 0.0.2 - improved script output
 * version 0.0.3 - fixed bug for camel cased element directive names (fooBar -> foo-bar)
-* version 0.1.0 - Add support for directives that do not have a restrict defined (Thanks kevinoconnor7)
-                - Used esprima to parse the input files into a syntax tree vs. inaccurate regex (Thanks kevinoconnor7)
+* version 0.1.0 - Add support for directives that do not have a restrict defined and used esprima to parse the input files into a syntax tree vs. inaccurate regex (Thanks kevinoconnor7 for both of these contributions)
 
 ## License
 Copyright (c) 2014 Jason Solis. Licensed under the MIT license.
