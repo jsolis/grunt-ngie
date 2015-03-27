@@ -26,7 +26,7 @@ module.exports = function (grunt) {
     var ieFixStart = '<!--[if lte IE 8]><script>(function(d){';
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
-    var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
+    var defaultElements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
 
     grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
       return file.src;
@@ -34,6 +34,7 @@ module.exports = function (grunt) {
 
     // Iterate over all specified file groups.
     this.files.forEach(function (file) {
+      var elements = defaultElements.slice();
       // Concat specified files.
       var src = file.src.filter(function (filepath) {
         // Warn on and remove invalid source files (if nonull was set).
