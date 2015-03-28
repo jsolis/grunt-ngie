@@ -9,7 +9,7 @@
 'use strict';
 
 var cheerio = require('cheerio');
-var esprima = require('esprima');
+var parseDirectives = require('ng-directive-parser').parseCode;
 
 module.exports = function (grunt) {
 
@@ -26,7 +26,7 @@ module.exports = function (grunt) {
     var ieFixStart = '<!--[if lte IE 8]><script>(function(d){';
     var ieFixBody = '';
     var ieFixEnd = 'for (var i=0;i<e.length;i++) { d.createElement(e[i]); } })(document);</script><![endif]-->';
-    var elements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
+    var defaultElements = ['ng-include', 'ng-pluralize', 'ng-view', 'ng:include', 'ng:pluralize', 'ng:view'];
 
     grunt.log.writeln('ngieifying ' + grunt.log.wordlist(this.files.map(function (file) {
       return file.src;
@@ -34,6 +34,8 @@ module.exports = function (grunt) {
 
     // Iterate over all specified file groups.
     this.files.forEach(function (file) {
+      var elements = defaultElements.slice();
+
       // Concat specified files.
       var src = file.src.filter(function (filepath) {
         // Warn on and remove invalid source files (if nonull was set).
@@ -46,70 +48,23 @@ module.exports = function (grunt) {
       }).forEach(function (filepath) {
         // Read file source.
         var file = grunt.file.read(filepath);
+        var parsed = parseDirectives(filepath, file);
 
-        var syntax = esprima.parse(file);
-
-        // Executes callback on the object and its children (recursively).
-        var traverse = function(object, callback) {
-          var key, child;
-
-          // Stop recursion if the callback returns false
-          if(callback.call(null, object) !== true) {
-            return;
+        parsed.forEach(function(d){
+          if(d && d.restrict.E){
+            elements.push(d.name.replace(/([A-Z])/g, '-$1').toLowerCase());
           }
-          for (key in object) {
-            if (object.hasOwnProperty(key)) {
-              child = object[key];
-              if (typeof child === 'object' && child !== null) {
-                traverse(child, callback);
-              }
-            }
-          }
-        };
-
-        // Confirm a call expression callee's name
-        var checkCallExpression = function(node, callee_name) {
-          return (
-            node.type === 'CallExpression' &&
-            typeof(node.callee) !== 'undefined' &&
-            typeof(node.callee.property) !== 'undefined' &&
-            node.callee.property.type === 'Identifier' &&
-            node.callee.property.name === callee_name
-          );
-        };
-
-        // Confirm a directive's restrict propert contains an 'E' in it
-        var checkRestrictProperty = function(node) {
-          return (
-            node.type === "Property" &&
-            typeof(node.key) !== 'undefined' &&
-            node.key.name === "restrict" &&
-            typeof(node.value) !== 'undefined' &&
-            node.value.value.indexOf('E') !== -1
-          );
-        };
-
-        traverse(syntax, function(node) {
-          if(
-            node.type === "CallExpression" &&
-            checkCallExpression(node, 'directive') &&
-            node.arguments.length > 1 &&
-            node.arguments[0].type === "Literal"
-          ) {
-            // Hyphonate a directive's name from camelCase
-            var directiveName = node.arguments[0].value.replace(/([A-Z])/g, '-$1').toLowerCase();
-            traverse(node.arguments.slice(1), function(subNode) {
-              if(subNode.type === "Property" && checkRestrictProperty(subNode)) {
-                elements.push(directiveName);
-                return false;
-              }
-              return true;
-            });
-            return false;
-          }
-          return true;
         });
+
       });
+
+      // Remove duplicate matches.
+      elements = elements.reduce(function(memo, val){
+        if(memo.indexOf(val) === -1){
+          memo.push(val);
+        }
+        return memo;
+      }, []);
 
       ieFixBody = 'var e = ' + JSON.stringify(elements) + ';';
       var fix = ieFixStart + ieFixBody + ieFixEnd;
