@@ -72,7 +72,7 @@ module.exports = function (grunt) {
       // load file.dest in cheerio
       var indexFilepath = file.dest;
       var indexFile = grunt.file.read(indexFilepath);
-      var $ = cheerio.load(indexFile);
+      var $ = cheerio.load(indexFile, { decodeEntities: false });
 
       // append the fix to the destTag
       $(options.destTag).append(fix);

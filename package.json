@@ -22,11 +22,7 @@
   "engines": {
     "node": ">= 0.8.0"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-clean": "~0.5.0",
@@ -39,7 +35,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "cheerio": "~0.15.0",
+    "cheerio": "~0.17.0",
     "ng-directive-parser": "0.0.3"
   }
 }
